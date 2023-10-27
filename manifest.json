@@ -1,0 +1,27 @@
+{
+    "manifest_version": 2,
+    "name": "Invidious Instance Selector",
+    "version": "1.0",
+    "description": "Allows users to select an Invidious instance.",
+    "permissions": [
+        "activeTab",
+        "tabs",
+        "storage",
+        "https://docs.invidious.io/*"
+    ],
+    "browser_action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+            "48": "images/icon.png"
+        }
+    },
+    "icons": {
+        "48": "images/icon.png"
+    },
+    "licenses": [
+        {
+            "name": "GNU General Public License (GPL) Version 3",
+            "url": "https://www.gnu.org/licenses/gpl-3.0.html"
+        }
+    ]
+}
