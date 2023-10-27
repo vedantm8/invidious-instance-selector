@@ -14,10 +14,17 @@ document.addEventListener("DOMContentLoaded", function () {
             instanceOptions.forEach((option) => {
                 var instanceUrl = option.href;
                 var instanceName = option.textContent;
-                var optionElement = document.createElement("option");
-                optionElement.value = instanceUrl;
-                optionElement.textContent = instanceName;
-                instanceSelect.appendChild(optionElement);
+                // Check if the instanceUrl does not contain "github" (case-insensitive).
+                if (!instanceUrl.toLowerCase().includes("github")) {
+                    var optionElement = document.createElement("option");
+                    optionElement.value = instanceUrl;
+                    optionElement.textContent = instanceName;
+                    instanceSelect.appendChild(optionElement);
+                }
+                // var optionElement = document.createElement("option");
+                // optionElement.value = instanceUrl;
+                // optionElement.textContent = instanceName;
+                // instanceSelect.appendChild(optionElement);
             });
         });
 
