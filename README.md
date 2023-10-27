@@ -4,7 +4,7 @@
 
 The Invidious Instance Selector is a Firefox extension that allows users to easily redirect to a specific Invidious instance. Invidious is an open-source front-end for YouTube that respects your privacy. This extension enhances the user experience by providing a seamless way to choose the Invidious instance you prefer.
 
-![Extension Icon](images/icon.png)
+![screenshot](./docs//demo.gif)
 
 ## Features
 
