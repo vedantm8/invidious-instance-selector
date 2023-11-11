@@ -6,6 +6,8 @@ The Invidious Instance Selector is a Firefox extension that allows users to easi
 
 ![screenshot](./docs//demo.gif)
 
+This can be found as a [Firefox Addon](https://addons.mozilla.org/en-US/firefox/addon/invidious-redirection/) 
+
 ## Features
 
 - Select from a list of public Invidious instances.
