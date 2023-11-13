@@ -42,10 +42,6 @@ Contributions are welcome! If you'd like to contribute to this project, please f
 
 This project is licensed under the [GNU General Public License (GPL) Version 3](LICENSE.txt).
 
-## Contact
-
-If you have any questions or issues, feel free to contact us at [your.email@example.com](mailto:your.email@example.com).
-
 ## Acknowledgments
 
 - This extension is inspired by the Invidious project (https://github.com/omarroth/invidious).
