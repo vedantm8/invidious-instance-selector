@@ -1,4 +1,4 @@
-# Invidious Instance Selector
+# Invidious Redirection
 
 ## Description
 
