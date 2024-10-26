@@ -1,6 +1,6 @@
-# Installation Guide for Textise This UserScript
+# Installation Guide for Invidious Redirection UserScript
 
-This guide will show you how to install the **Textise This UserScript** using **ViolentMonkey**, a free and open-source UserScript manager. The script will allow you to convert the current page into a text-only format using Textise.net.
+This guide will show you how to install the **Invidious Redirection UserScript** using **ViolentMonkey**, a free and open-source UserScript manager. The script will allow you to convert the current page into a text-only format using Textise.net.
 
 ## Prerequisites
 - A modern browser like **Google Chrome**, **Mozilla Firefox**, or **Microsoft Edge**.
