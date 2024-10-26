@@ -25,43 +25,164 @@ If you don't already have **ViolentMonkey** installed, follow the appropriate li
 
     ```javascript
     // ==UserScript==
-    // @name           Textise This
-    // @namespace      https://github.com/vedantm8/Textise-This
-    // @version        1.0
-    // @description    Opens current page in Textise.net
-    // @author         -
-    // @match          *://*/*
-    // @grant          none
+    // @name         Invidious Instance Selector
+    // @namespace    http://tampermonkey.net/
+    // @version      1.4
+    // @description  Redirect YouTube videos to selected Invidious instance
+    // @match        *://*.youtube.com/*
+    // @grant        GM_openInTab
+    // @grant        GM.xmlHttpRequest
     // ==/UserScript==
-    
-    (function() {
+
+    (function () {
         'use strict';
+
+        // CSS styles for a better appearance
+        const styles = `
+            #toggle-invidious-popup {
+                background-color: #1e90ff;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                padding: 10px 15px;
+                font-size: 14px;
+                font-weight: bold;
+                cursor: pointer;
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+                z-index: 10000;
+                transition: background-color 0.3s ease;
+            }
+            #toggle-invidious-popup:hover {
+                background-color: #104e8b;
+            }
+            #invidious-popup {
+                display: none;
+                position: fixed;
+                top: 50px;
+                right: 10px;
+                width: 250px;
+                padding: 20px;
+                background-color: #f9f9f9;
+                border-radius: 8px;
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+                z-index: 9999;
+                font-family: Arial, sans-serif;
+            }
+            #invidious-popup h1 {
+                font-size: 18px;
+                margin: 0;
+                margin-bottom: 10px;
+                color: #333;
+            }
+            #invidious-popup label {
+                font-size: 14px;
+                color: #555;
+            }
+            #instanceSelect {
+                width: 100%;
+                padding: 8px;
+                margin-top: 8px;
+                margin-bottom: 12px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+            }
+            #redirectToInstance {
+                background-color: #28a745;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                padding: 8px 12px;
+                cursor: pointer;
+                width: 100%;
+                font-size: 14px;
+                font-weight: bold;
+                transition: background-color 0.3s ease;
+            }
+            #redirectToInstance:hover {
+                background-color: #218838;
+            }
+        `;
     
-        // Function to get the current URL
-        let currURL = window.location.href;
+        // Insert CSS styles into the document
+        const styleSheet = document.createElement("style");
+        styleSheet.type = "text/css";
+        styleSheet.innerText = styles;
+        document.head.appendChild(styleSheet);
     
-        // Create a new button and add it to the page
-        let textiseButton = document.createElement('button');
-        textiseButton.id = 'textise-button';
-        textiseButton.textContent = 'View in Textise';
-        textiseButton.style.position = 'fixed';
-        textiseButton.style.bottom = '10px';
-        textiseButton.style.right = '10px';
-        textiseButton.style.zIndex = '10000';
-        textiseButton.style.padding = '10px';
-        textiseButton.style.backgroundColor = '#4CAF50';
-        textiseButton.style.color = 'white';
-        textiseButton.style.border = 'none';
-        textiseButton.style.cursor = 'pointer';
+        // Create a button to toggle the Invidious selector popup
+        const toggleButton = document.createElement('button');
+        toggleButton.id = 'toggle-invidious-popup';
+        toggleButton.textContent = 'Invidious Selector';
+        document.body.appendChild(toggleButton);
     
-        document.body.appendChild(textiseButton);
+        // Create the popup container, initially hidden
+        const container = document.createElement('div');
+        container.id = 'invidious-popup';
+        container.innerHTML = `
+            <h1>Invidious Instance Selector</h1>
+            <label for="instanceSelect">Select an Invidious instance:</label>
+            <select id="instanceSelect">
+                <!-- Dropdown populated dynamically -->
+            </select>
+            <button id="redirectToInstance">Go to Invidious</button>
+        `;
+        document.body.appendChild(container);
     
-        // Event listener to open Textise in a new tab when the button is clicked
-        textiseButton.addEventListener('click', function() {
-            let textiseURL = `https://www.textise.net/showText.aspx?strURL=${encodeURIComponent(currURL)}`;
-            window.open(textiseURL, '_blank');
+        // Toggle visibility of the popup when the button is clicked
+        toggleButton.addEventListener('click', () => {
+            container.style.display = container.style.display === 'none' ? 'block' : 'none';
         });
     
+        // Populate instanceSelect dropdown
+        const instanceSelect = container.querySelector('#instanceSelect');
+        const redirectToInstanceButton = container.querySelector('#redirectToInstance');
+    
+        // Fetch the list of Invidious instances
+        GM.xmlHttpRequest({
+            method: 'GET',
+            url: 'https://docs.invidious.io/instances/',
+            onload: function(response) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(response.responseText, 'text/html');
+                const instanceOptions = doc.querySelectorAll('h2 + ul a');
+    
+                instanceOptions.forEach(option => {
+                    const instanceUrl = option.href;
+                    const instanceName = option.textContent;
+                    if (!instanceUrl.toLowerCase().includes('github')) {
+                        const optionElement = document.createElement('option');
+                        optionElement.value = instanceUrl;
+                        optionElement.textContent = instanceName;
+                        instanceSelect.appendChild(optionElement);
+                    }
+                });
+            },
+            onerror: function() {
+                alert("Failed to load Invidious instances.");
+            }
+        });
+    
+        // Redirect to selected Invidious instance
+        redirectToInstanceButton.addEventListener('click', () => {
+            const selectedInstance = instanceSelect.value;
+            const youtubeVideoID = getYoutubeVideoID(window.location.href);
+    
+            if (youtubeVideoID) {
+                const invidiousLink = `${selectedInstance.replace(/\/$/, '')}/watch?v=${youtubeVideoID}`;
+                GM_openInTab(invidiousLink, { active: true });
+            } else {
+                alert('No YouTube video ID found.');
+            }
+        });
+    
+        // Helper function to extract YouTube video ID from URL
+        function getYoutubeVideoID(url) {
+            const match = url.match(/[?&]v=([^&]+)/);
+            return match && match[1] ? match[1] : '';
+        }
     })();
     ```
 
